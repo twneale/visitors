@@ -1,3 +1,6 @@
+from visitors import Visitor
+
+
 # ---------------------------------------------------------------------------
 # Helpers for figuring out the start/end indexes of a parse tree.
 # ---------------------------------------------------------------------------
@@ -54,7 +57,7 @@ def get_span(tree):
 # ---------------------------------------------------------------------------
 # Helpers for getting leaf nodes.
 # ---------------------------------------------------------------------------
-class LeafYielder(IteratorVisitor):
+class LeafYielder(Visitor):
 
     def generic_visit(self, node):
         if not node.children:

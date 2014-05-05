@@ -1,6 +1,7 @@
 import networkx as nx
 
-from tater import Node, Visitor, IteratorVisitor
+from treebie import Node
+from visitors import Visitor
 
 
 class DiGraphVisitor(Visitor):
@@ -10,21 +11,6 @@ class DiGraphVisitor(Visitor):
 
     def get_children(self, node):
         return self.G.successors(node)
-
-    def finalize(self):
-        '''Final steps the visitor needs to take, plus the
-        return value or .visit, if any.
-        '''
-        return self
-
-
-class DiGraphIteratorVisitor(IteratorVisitor):
-
-    def __init__(self, G):
-        self.G = G
-
-    def get_children(self, node):
-        return self.G[node]
 
     def finalize(self):
         '''Final steps the visitor needs to take, plus the

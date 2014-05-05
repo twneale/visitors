@@ -7,7 +7,8 @@ import functools
 import lxml.etree as et
 from lxml.html import HtmlComment
 
-from visitor import Visitor, Node
+from treebie import Node
+from visitors import Visitor
 
 
 class XmlEtreeVisitor(Visitor):
