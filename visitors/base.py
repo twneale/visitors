@@ -22,9 +22,12 @@ class Break(Exception):
 
 
 class Visitor(object):
-    '''Define a generic_visit function to do the same
-    thing on each node.
-
+    '''A customizable visitor pattern implementation. Either call
+    visitor.visit(thing), which visits `thing` and returns visitor.finalize(),
+    or iterate over visitor.itervisit(). Visitor methods can be generators,
+    in which case itervisit will yield from each invoked method. Methods
+    can also be GeneratorContextManager types, in which case the visit will
+    enter the method, continue visiting child nodes, then exit.
     '''
     Continue = Continue
     Break = Break
@@ -45,6 +48,7 @@ class Visitor(object):
     @CachedClassAttr
     def _method_prefix(cls):
         return getattr(cls, 'method_prefix', 'visit_')
+
     # ------------------------------------------------------------------------
     # Define the default overridables.
     # ------------------------------------------------------------------------
@@ -113,7 +117,8 @@ class Visitor(object):
         '''The main visit function. Visits the passed-in node and calls
         finalize.
         '''
-        tuple(self.itervisit(node))
+        for token in self.itervisit(node):
+            pass
         result = self.finalize()
         if result is not self:
             return result

@@ -13,11 +13,6 @@ from visitors import Visitor
 
 class XmlEtreeVisitor(Visitor):
 
-    def visit(self, el):
-        self.el = el
-        self.visit_nodes(el)
-        return self.finalize()
-
     def get_children(self, el):
         return tuple(el)
 
@@ -25,12 +20,18 @@ class XmlEtreeVisitor(Visitor):
         return el.tag
 
 
-class HtmlEtreeVisitor(XmlEtreeVisitor):
+class LxmlHtmlVisitor(XmlEtreeVisitor):
 
     def visit_HtmlComment(self, node):
         '''Skip comments.
         '''
         raise self.Continue()
+
+    def get_nodekey(self, el):
+        key = el.tag
+        if callable(key):
+            return
+        yield key
 
 
 class _TaterXmlEtreeConverter(Visitor):
