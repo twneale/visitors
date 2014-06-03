@@ -43,7 +43,9 @@ class TypeVisitor(Visitor):
             'MutableSequence',
             'ByteString')
         for type_name in abc_types:
-            type_ = getattr(coll_abc, type_name)
+            type_ = getattr(coll_abc, type_name, None)
+            if type_ is None:
+                continue
             if isinstance(token, type_):
                 yield type_name
 
@@ -65,7 +67,9 @@ class TypeVisitor(Visitor):
             'SimpleNamespace',
             'TracebackType')
         for type_name in interp_types:
-            type_ = getattr(types, type_name)
+            type_ = getattr(types, type_name, None)
+            if type_ is None:
+                continue
             if isinstance(token, type_):
                 yield type_name
 
