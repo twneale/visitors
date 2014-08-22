@@ -6,6 +6,8 @@ and not visit them.
 '''
 import types
 import contextlib
+import functools
+
 from hercules import CachedClassAttr
 
 
@@ -21,7 +23,7 @@ class Break(Exception):
     '''
 
 
-class Visitor(object):
+class Visitor:
     '''A customizable visitor pattern implementation. Either call
     visitor.visit(thing), which visits `thing` and returns visitor.finalize(),
     or iterate over visitor.itervisit(). Visitor methods can be generators,
@@ -31,6 +33,17 @@ class Visitor(object):
     '''
     Continue = Continue
     Break = Break
+
+    @staticmethod
+    def continues(method):
+        '''Method decorator signifying that the visitor should not visit the
+        current node's children once this method has been invoked.
+        '''
+        @functools.wraps(method)
+        def wrapped(self, *args, **kwargs):
+            yield method(self, *args, **kwargs)
+            raise self.Continue()
+        return wrapped
 
     # ------------------------------------------------------------------------
     # Define some class level types needed by the internals.
