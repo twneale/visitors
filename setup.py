@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
-from visitors import __version__
 
 
 long_description = ''
 
 setup(name='visitors',
-      version=__version__,
+      version=0.1,
       packages=find_packages(),
       author='Thom Neale',
       author_email='twneale@gmail.com',
