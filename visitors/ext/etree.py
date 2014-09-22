@@ -36,31 +36,30 @@ class LxmlHtmlVisitor(XmlEtreeVisitor):
 
 class _TaterXmlEtreeConverter(Visitor):
 
+    def __init__(self):
+        self.uuid_to_el = {}
+
     def get_nodekey(self, node):
         return node['tag']
 
     def finalize(self):
-        return et.tostring(self.root)
+        return self.root
 
     def generic_visit(self, node):
-        root = getattr(self, 'root', None)
-        if root is None:
-            attrs = dict(node)
-            tag = attrs.pop('tag')
-            text = attrs.pop('text', None)
-            tail = attrs.pop('tail', None)
-            root = et.Element(tag, **attrs)
-            root.text = text
-            root.tail = tail
-            self.root = root
+        attrs = dict(node)
+        tag = attrs.pop('tag')
+        text = attrs.pop('text', None)
+        tail = attrs.pop('tail', None)
+        attrs = dict((k, str(v)) for k, v in attrs.items())
+        parent = self.uuid_to_el.get(node.parent.uuid)
+        if parent is None:
+            this = et.Element(tag, **attrs)
+            self.root = this
         else:
-            attrs = dict(node)
-            tag = attrs.pop('tag')
-            text = attrs.pop('text', None)
-            tail = attrs.pop('tail', None)
-            sub_el = et.SubElement(root, tag, **attrs)
-            sub_el.text = text
-            sub_el.tail = tail
+            this = et.SubElement(parent, tag, **attrs)
+        this.text = text
+        this.tail = tail
+        self.uuid_to_el[node.uuid] = this
 
 
 def to_etree(node):
@@ -74,7 +73,8 @@ def from_etree(
     '''Convert the element tree to a tater tree.
     '''
     node_cls = node_cls or Node
-    node = node or node_cls()
+    if node is None:
+        node = node_cls()
     tag = tagsub(el.tag)
     attrib = dict((tagsub(k), v) for (k, v) in el.attrib.items())
     node.update(attrib, tag=tag)
