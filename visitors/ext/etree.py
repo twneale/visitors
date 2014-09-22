@@ -47,12 +47,20 @@ class _TaterXmlEtreeConverter(Visitor):
         if root is None:
             attrs = dict(node)
             tag = attrs.pop('tag')
+            text = attrs.pop('text', None)
+            tail = attrs.pop('tail', None)
             root = et.Element(tag, **attrs)
+            root.text = text
+            root.tail = tail
             self.root = root
         else:
             attrs = dict(node)
             tag = attrs.pop('tag')
-            et.SubElement(root, tag, **attrs)
+            text = attrs.pop('text', None)
+            tail = attrs.pop('tail', None)
+            sub_el = et.SubElement(root, tag, **attrs)
+            sub_el.text = text
+            sub_el.tail = tail
 
 
 def to_etree(node):
