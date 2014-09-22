@@ -20,8 +20,13 @@ class TypeVisitor(Visitor):
         '''Given a particular token, check the visitor instance for methods
         mathing the computed methodnames (the function is a generator).
         '''
+        # Check the mro.
         for mro_type in type(token).__mro__:
             yield mro_type.__name__
+
+        # Check for callability.
+        if callable(token):
+            yield 'callable'
 
         # Check for the collections.abc types.
         abc_types = (
@@ -76,14 +81,16 @@ class TypeVisitor(Visitor):
 
 class StreamVisitor(TypeVisitor):
 
-    def itervisit(self, iterable, gentype=types.GeneratorType):
+    def itervisit(
+            self, iterable, gentype=types.GeneratorType,
+            exhaust_generators=True):
         '''The main visit function. Visits the passed-in node and calls
         finalize.
         '''
         self.iterable = iter(iterable)
         for token in self.iterable:
             result = self.itervisit_node(token)
-            if isinstance(result, gentype):
+            if exhaust_generators and isinstance(result, gentype):
                 for output in result:
                     yield output
             elif result is not None:
